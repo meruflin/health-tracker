@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Reports | Health Tracker{% endblock %}
+{% block content %}
+<h1>Medical reports</h1>
+<p class="muted">Upload and access your personal medical documents.</p>
+
+<section class="panel">
+    <h2>Upload a report</h2>
+    <p class="muted">Allowed formats: PDF, PNG, JPG, JPEG. Maximum size: 10 MB.</p>
+    <form method="POST" enctype="multipart/form-data" class="form-grid">
+        <div>
+            <label>Report title *</label>
+            <input name="title" required maxlength="150" placeholder="Blood test report">
+        </div>
+        <div>
+            <label>Choose file *</label>
+            <input type="file" name="report_file" accept=".pdf,.png,.jpg,.jpeg" required>
+        </div>
+        <div class="wide"><button class="btn">Upload report</button></div>
+    </form>
+</section>
+
+<section class="panel">
+    <h2>Your uploaded reports</h2>
+    {% if items %}
+        {% for item in items %}
+        <div class="list-row">
+            <div>
+                <strong>{{ item.title }}</strong>
+                <p class="muted">{{ item.original_filename }}</p>
+                <p class="muted">{{ item.uploaded_at.strftime('%d %b %Y, %I:%M %p') }}</p>
+            </div>
+            <div class="inline-actions">
+                <a class="btn small" href="{{ url_for('download_report', report_id=item.id) }}">Download</a>
+                <form method="POST" action="{{ url_for('delete_report', report_id=item.id) }}"
+                      data-confirm="Delete this uploaded report?">
+                    <button class="btn danger small">Delete</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p class="muted">No reports uploaded yet.</p>
+    {% endif %}
+</section>
+{% endblock %}

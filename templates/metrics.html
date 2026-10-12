@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Health Metrics | Health Tracker{% endblock %}
+{% block content %}
+<h1>Health metrics</h1>
+<p class="muted">Record measurements over time. Enter values as provided by your healthcare professional or measuring device.</p>
+
+<section class="panel">
+    <h2>Add a measurement</h2>
+    <form method="POST" class="form-grid">
+        <div>
+            <label>Metric *</label>
+            <select name="metric_type" id="metric-type" required>
+                <option value="Weight">Weight</option>
+                <option value="Blood Pressure">Blood Pressure</option>
+                <option value="Blood Sugar">Blood Sugar</option>
+            </select>
+        </div>
+        <div>
+            <label>Value *</label>
+            <input name="value" required maxlength="50" placeholder="e.g. 60 or 120/80">
+        </div>
+        <div>
+            <label>Unit</label>
+            <input name="unit" maxlength="30" placeholder="kg, mmHg, mg/dL">
+        </div>
+        <div>
+            <label>Notes</label>
+            <input name="notes" maxlength="255">
+        </div>
+        <div class="wide"><button class="btn">Save measurement</button></div>
+    </form>
+</section>
+
+<section class="panel">
+    <h2>Measurement chart</h2>
+    <p class="muted">The chart plots numeric values. Blood pressure entries such as 120/80 are kept in your history but cannot be plotted as a single number.</p>
+    <div class="chart-wrap"><canvas id="metrics-chart"></canvas></div>
+    <script id="metrics-data" type="application/json">{{ chart_data|tojson }}</script>
+</section>
+
+<section class="panel">
+    <h2>Measurement history</h2>
+    {% if items %}
+        {% for item in items %}
+        <div class="list-row">
+            <div>
+                <strong>{{ item.metric_type }}: {{ item.value }} {{ item.unit or '' }}</strong>
+                <p class="muted">{{ item.recorded_at.strftime('%d %b %Y, %I:%M %p') }}</p>
+                {% if item.notes %}<p class="muted">{{ item.notes }}</p>{% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p class="muted">No measurements recorded yet.</p>
+    {% endif %}
+</section>
+{% endblock %}

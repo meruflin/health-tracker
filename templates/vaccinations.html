@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Vaccinations | Health Tracker{% endblock %}
+{% block content %}
+<h1>Vaccination tracker</h1>
+<p class="muted">Record vaccine doses and optional upcoming due dates.</p>
+
+<section class="panel">
+    <h2>Add a vaccination</h2>
+    <form method="POST" class="form-grid">
+        <div>
+            <label>Vaccine name *</label>
+            <input name="vaccine_name" required maxlength="150">
+        </div>
+        <div>
+            <label>Dose date</label>
+            <input type="date" name="dose_date">
+        </div>
+        <div>
+            <label>Next due date</label>
+            <input type="date" name="next_due_date">
+        </div>
+        <div>
+            <label>Notes</label>
+            <input name="notes" maxlength="255">
+        </div>
+        <div class="wide"><button class="btn">Save vaccination</button></div>
+    </form>
+</section>
+
+<section class="panel">
+    <h2>Vaccination history</h2>
+    {% if items %}
+        {% for item in items %}
+        <div class="list-row">
+            <div>
+                <strong>{{ item.vaccine_name }}</strong>
+                <p class="muted">Dose date: {{ item.dose_date or 'Not entered' }}</p>
+                <p class="muted">Next due: {{ item.next_due_date or 'Not entered' }}</p>
+                <p class="muted">{{ item.notes or '' }}</p>
+            </div>
+            <form method="POST" action="{{ url_for('delete_vaccination', vaccine_id=item.id) }}"
+                  data-confirm="Delete this vaccination record?">
+                <button class="btn danger small">Delete</button>
+            </form>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p class="muted">No vaccination records yet.</p>
+    {% endif %}
+</section>
+{% endblock %}

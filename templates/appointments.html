@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Appointments | Health Tracker{% endblock %}
+{% block content %}
+<h1>Appointments</h1>
+<p class="muted">Plan upcoming visits and keep track of previous appointments.</p>
+
+<section class="panel">
+    <h2>Schedule an appointment</h2>
+    <form method="POST" class="form-grid">
+        <div>
+            <label>Doctor / provider *</label>
+            <input name="doctor_name" required maxlength="150">
+        </div>
+        <div>
+            <label>Date and time *</label>
+            <input type="datetime-local" name="appointment_date" required>
+        </div>
+        <div class="wide">
+            <label>Reason</label>
+            <input name="reason" maxlength="255" placeholder="Optional">
+        </div>
+        <div class="wide"><button class="btn">Save appointment</button></div>
+    </form>
+</section>
+
+<section class="panel">
+    <h2>All appointments</h2>
+    {% if items %}
+        {% for item in items %}
+        <div class="list-row">
+            <div>
+                <strong>{{ item.doctor_name }}</strong>
+                <p class="muted">{{ item.appointment_date.strftime('%d %b %Y, %I:%M %p') }}</p>
+                <p class="muted">{{ item.reason or 'No reason entered' }}</p>
+                <span class="pill">{{ item.status }}</span>
+            </div>
+            <div class="inline-actions">
+                {% if item.status == 'Scheduled' %}
+                <form method="POST" action="{{ url_for('complete_appointment', appointment_id=item.id) }}">
+                    <button class="btn small">Mark completed</button>
+                </form>
+                {% endif %}
+                <form method="POST" action="{{ url_for('delete_appointment', appointment_id=item.id) }}"
+                      data-confirm="Delete this appointment?">
+                    <button class="btn danger small">Delete</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p class="muted">No appointments added yet.</p>
+    {% endif %}
+</section>
+{% endblock %}

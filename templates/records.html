@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Medical Records | Health Tracker{% endblock %}
+{% block content %}
+<h1>Medical records</h1>
+<p class="muted">Organize diagnoses, visits, tests, and other health notes.</p>
+
+<section class="panel">
+    <h2>Add a record</h2>
+    <form method="POST" class="form-grid">
+        <div>
+            <label>Record title *</label>
+            <input name="title" required maxlength="150" placeholder="Annual check-up">
+        </div>
+        <div>
+            <label>Record type *</label>
+            <select name="record_type" required>
+                <option value="">Choose type</option>
+                <option>Consultation</option>
+                <option>Lab Test</option>
+                <option>Diagnosis</option>
+                <option>Prescription</option>
+                <option>Other</option>
+            </select>
+        </div>
+        <div>
+            <label>Date *</label>
+            <input type="date" name="record_date" required value="{{ today }}">
+        </div>
+        <div class="wide">
+            <label>Notes</label>
+            <textarea name="notes" rows="3" placeholder="Optional details"></textarea>
+        </div>
+        <div class="wide"><button class="btn">Save record</button></div>
+    </form>
+</section>
+
+<section class="panel">
+    <h2>Your records</h2>
+    {% if items %}
+        {% for item in items %}
+        <div class="list-row">
+            <div>
+                <strong>{{ item.title }}</strong>
+                <span class="pill">{{ item.record_type }}</span>
+                <p class="muted">{{ item.record_date }} · {{ item.notes or 'No notes' }}</p>
+            </div>
+            <form method="POST" action="{{ url_for('delete_record', record_id=item.id) }}"
+                  data-confirm="Delete this medical record?">
+                <button class="btn danger small">Delete</button>
+            </form>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p class="muted">No medical records yet.</p>
+    {% endif %}
+</section>
+{% endblock %}

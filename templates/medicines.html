@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Medicines | Health Tracker{% endblock %}
+{% block content %}
+<h1>Medicine tracker</h1>
+<p class="muted">Keep your medicine schedules and daily logs in one place.</p>
+
+<section class="panel">
+    <h2>Add a medicine</h2>
+    <form method="POST" class="form-grid">
+        <div>
+            <label>Medicine name *</label>
+            <input name="medicine_name" required maxlength="150">
+        </div>
+        <div>
+            <label>Dosage</label>
+            <input name="dosage" placeholder="As prescribed">
+        </div>
+        <div>
+            <label>Scheduled time *</label>
+            <input type="time" name="schedule_time" required>
+        </div>
+        <div>
+            <label>Start date *</label>
+            <input type="date" name="start_date" required value="{{ today }}">
+        </div>
+        <div>
+            <label>End date</label>
+            <input type="date" name="end_date">
+        </div>
+        <div>
+            <label>Instructions</label>
+            <input name="instructions" placeholder="Optional">
+        </div>
+        <div class="wide"><button class="btn">Add medicine</button></div>
+    </form>
+</section>
+
+<section class="panel">
+    <h2>Your medicine schedules</h2>
+    {% if items %}
+        {% for item in items %}
+        <div class="list-row">
+            <div>
+                <strong>{{ item.medicine_name }}</strong>
+                <p class="muted">
+                    {{ item.dosage or 'Dosage not entered' }} ·
+                    {{ item.schedule_time|string }} ·
+                    Starts {{ item.start_date }}
+                </p>
+                <p class="muted">{{ item.instructions or '' }}</p>
+                <div class="inline-actions">
+                    <form method="POST" action="{{ url_for('log_medicine', medicine_id=item.id) }}">
+                        <input type="hidden" name="status" value="Taken">
+                        <button class="btn small" {% if log_map.get(item.id) == 'Taken' %}disabled{% endif %}>
+                            ✓ Taken today
+                        </button>
+                    </form>
+                    <form method="POST" action="{{ url_for('log_medicine', medicine_id=item.id) }}">
+                        <input type="hidden" name="status" value="Missed">
+                        <button class="btn secondary small" {% if log_map.get(item.id) == 'Missed' %}disabled{% endif %}>
+                            Mark missed
+                        </button>
+                    </form>
+                    <form method="POST" action="{{ url_for('delete_medicine', medicine_id=item.id) }}"
+                          data-confirm="Delete this medicine schedule?">
+                        <button class="btn danger small">Delete</button>
+                    </form>
+                </div>
+                {% if log_map.get(item.id) %}
+                    <span class="pill">{{ log_map.get(item.id) }} today</span>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p class="muted">No medicines added yet.</p>
+    {% endif %}
+</section>
+{% endblock %}

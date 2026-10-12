@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Dashboard | Health Tracker{% endblock %}
+{% block content %}
+<section class="page-heading">
+    <div>
+        <p class="eyebrow">YOUR PERSONAL HEALTH SPACE</p>
+        <h1>Hello, {{ session.get('user_name', 'there') }}! 👋</h1>
+        <p class="muted">Keep track of your health, one step at a time.</p>
+    </div>
+    <a class="btn" href="{{ url_for('metrics') }}">+ Add health metric</a>
+</section>
+
+<div class="stats-grid">
+    <a class="stat-card" href="{{ url_for('records') }}">
+        <span class="stat-icon">📋</span>
+        <p>Medical records</p>
+        <h2>{{ counts.records }}</h2>
+    </a>
+    <a class="stat-card" href="{{ url_for('medicines') }}">
+        <span class="stat-icon">💊</span>
+        <p>Active medicines</p>
+        <h2>{{ counts.medicines }}</h2>
+    </a>
+    <a class="stat-card" href="{{ url_for('appointments') }}">
+        <span class="stat-icon">🩺</span>
+        <p>Upcoming appointments</p>
+        <h2>{{ counts.appointments }}</h2>
+    </a>
+    <a class="stat-card" href="{{ url_for('metrics') }}">
+        <span class="stat-icon">📈</span>
+        <p>Health measurements</p>
+        <h2>{{ counts.metrics }}</h2>
+    </a>
+</div>
+
+<div class="two-column">
+    <section class="panel">
+        <div class="panel-heading">
+            <h2>Upcoming appointments</h2>
+            <a href="{{ url_for('appointments') }}">View all →</a>
+        </div>
+        {% if appointments %}
+            {% for item in appointments %}
+            <div class="list-row">
+                <div>
+                    <strong>{{ item.doctor_name }}</strong>
+                    <p class="muted">{{ item.reason or 'General appointment' }}</p>
+                </div>
+                <span class="date-text">{{ item.appointment_date.strftime('%d %b %Y, %I:%M %p') }}</span>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p class="muted">No upcoming appointments. Enjoy the breathing room!</p>
+        {% endif %}
+    </section>
+
+    <section class="panel">
+        <div class="panel-heading">
+            <h2>Recent health metrics</h2>
+            <a href="{{ url_for('metrics') }}">View all →</a>
+        </div>
+        {% if metrics %}
+            {% for item in metrics %}
+            <div class="list-row">
+                <div>
+                    <strong>{{ item.metric_type }}</strong>
+                    <p class="muted">{{ item.recorded_at.strftime('%d %b %Y') }}</p>
+                </div>
+                <span class="metric-value">{{ item.value }} {{ item.unit or '' }}</span>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p class="muted">Your measurements will appear here after you add them.</p>
+        {% endif %}
+    </section>
+</div>
+
+<div class="notice">
+    <strong>Friendly reminder:</strong> Health Tracker helps organize information.
+    It does not diagnose conditions or replace advice from a qualified healthcare professional.
+</div>
+{% endblock %}

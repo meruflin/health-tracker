@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Login | Health Tracker{% endblock %}
+{% block content %}
+<div class="auth-card">
+    <div class="logo">💙</div>
+    <h1>Welcome back</h1>
+    <p class="muted">Log in to manage your health records.</p>
+
+    <form method="POST">
+        <label>Email address</label>
+        <input type="email" name="email" required autocomplete="email">
+
+        <label>Password</label>
+        <input type="password" name="password" required autocomplete="current-password">
+
+        <button class="btn full" type="submit">Log in</button>
+    </form>
+
+    <p class="center">New here? <a href="{{ url_for('register') }}">Create an account</a></p>
+</div>
+{% endblock %}
